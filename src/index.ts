@@ -14,14 +14,7 @@ type ElysiaDynamicRouteRode<Methods extends _Methods> = {
 }
 
 function create(app: Elysia) {
-  // if (!app.server) throw new Error("Elysia server instance is required")
-  // app.stop()
-  console.log("create  app.server?.port:", app.server?.port)
-  app.listen(app.server || 80)
-  // const a = app
-  // console.log("create  a:", a)
-
-  return app
+  app.listen(app.server || 3000)
 }
 
 export class ElysiaDynamicRoute<E extends Elysia, const BasePath extends string = '', const NameFN extends string = "road"> {
@@ -31,8 +24,7 @@ export class ElysiaDynamicRoute<E extends Elysia, const BasePath extends string 
         add: {
           get<M extends "get">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
             app.get(path, handler, hooks)
-            app.use(app => app.get(path, handler, hooks))
-            return create(app)
+            // create(app)
           },
           post<M extends "post">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
             app.get(path, handler, hooks)
