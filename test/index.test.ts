@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test"
 import Elysia from "elysia"
-import { ElysiaDynamicRouteRode } from "../src"
+import { ElysiaDynamicRoute } from "../src"
 
 
 describe("index", () => {
