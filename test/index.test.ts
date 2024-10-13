@@ -5,12 +5,18 @@ import { ElysiaDynamicRoute } from "../src"
 
 describe("index", () => {
     test("should return true", async () => {
-        const app = new Elysia()
+        const app = new Elysia().use(ElysiaDynamicRoute())
         const a = ElysiaDynamicRoute(app)
-            .get("/", async ({ road }) => {
+        a.get("/", async ({ road }) => {
                 road.add.get("/test", "test")
                 return "done"
             })
+        app.get("/1", async ({ road }) => {
+                road.add.get("/test", "test")
+                return "done"
+            })
+        console.log("test  app:", app.routeTree)
+        console.log("test  app:", a.routeTree)
 
 
         const get1 = await app.handle(new Request("http://localhost")).then(res => res.text())

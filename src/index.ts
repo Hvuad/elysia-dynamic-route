@@ -19,11 +19,8 @@ function create(app: Elysia) {
   return app
 }
 
-export const ElysiaDynamicRoute = <E extends Elysia, const BasePath extends string = '', const NameFN extends string = "road">(app: E, config?: ElysiaConfig<BasePath, false> & ElysiaDynamicRouteConfig<NameFN>) => {
-
-  if (!app) throw new Error("Elysia instance is required")
-
-  return app.use(new Elysia<BasePath>({ name: "elysia-dynamic-route", ...config })
+export const ElysiaDynamicRoute = <E extends Elysia, const BasePath extends string = '', const NameFN extends string = "road">(app?: E, config?: ElysiaConfig<BasePath, false> & ElysiaDynamicRouteConfig<NameFN>) => {
+  const edr = (app: Elysia = new Elysia()) => new Elysia<BasePath>({ name: "elysia-dynamic-route", ...config })
     .decorate(config?.init ?? "road", {
       add: {
         get<M extends "get">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
@@ -48,5 +45,6 @@ export const ElysiaDynamicRoute = <E extends Elysia, const BasePath extends stri
         },
       }
     }
-    ))
+    )
+  return app ? app.use(edr) as unknown as E & ReturnType<typeof edr> : edr()
 }
