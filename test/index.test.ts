@@ -1,71 +1,57 @@
 import { describe, test, expect } from "bun:test"
 import Elysia from "elysia"
 import { ElysiaDynamicRoute } from "../src"
+import { sleep } from "bun"
 
-
+const edr = new ElysiaDynamicRoute()
+const app = new Elysia().use(edr.elysia).get("/home", "home")
 describe("index", () => {
-    // test("should return true", async () => {
-    //     const { app } = new ElysiaDynamicRoute()
+
+    // test("should create success", async () => {
     //     app.get("/", async ({ road }) => {
     //         road.add.get("/test", "test")
     //         return "done"
     //     })
-    //     console.log('app', app.routeTree)
-    //     const get1 = await app.handle(new Request("http://localhost")).then(res => res.text())
-    //     console.log("test  get1:", get1)
-    //     expect(get1).toBe("done")
+    //     const createRoad = await app.handle(new Request("http://localhost")).then(res => res.text())
+    //     expect(createRoad).toBe("done")
+
+    // })
+
+    // test("should access new route test", async () => {
     //     const response = await app.handle(new Request("http://localhost/test")).then(res => res.text())
-    //     console.log("test  response:", response)
-    //     // expect(response).toBe("test")
+    //     expect(response).toBe("test")
 
-
-
-    //     expect(true).toBe(true)
     // })
 
-    // test("should return true wrap", async () => {
-    //     const a = new Elysia()
-    //     const { app } = new ElysiaDynamicRoute(a)
-    //     app.get("/", async ({ road }) => {
-    //         road.add.get("/test", () => {
-    //             return "test"
-    //         })
-    //         road.add.get("/1", "1")
-    //         road.add.get("/2", 2)
+
+    // test("group should work", async () => {
+    //     app.group("/a", (v) => v.get("/", ({ road }) => {
+    //         road.add.get("/a/test", "test")
     //         return "done"
-    //     })
-    //     // a.get("/123", ({ road }) => "123")
+    //     }))
 
-    //     console.log('a', a.routeTree)
-    //     console.log('app', app.routeTree)
-
-    //     const geta = await a.handle(new Request("http://localhost")).then(res => res.text())
-    //     console.log("test  geta:", geta)
-    //     const get1 = await app.handle(new Request("http://localhost")).then(res => res.text())
-    //     console.log("test  get1:", get1)
-    //     // expect(get1).toBe("done")
-    //     // const response = await app.handle(new Request("http://localhost:3000/test")).then(res => res.text())
-    //     // console.log("test  response:", response)
-    //     // expect(response).toBe("test")
+    //     const createRoad = await app.handle(new Request("http://localhost/a")).then(res => res.text())
+    //     expect(createRoad).toBe("done")
+    //     const response = await app.handle(new Request("http://localhost/a/test")).then(res => res.text())
+    //     expect(response).toBe("test")
     // })
 
-    test("should return true use", async () => {
-        const { EDR } = new ElysiaDynamicRoute()
-        const app = new Elysia().use(EDR)
-        app.get("/", async ({ road }) => {
-            road.add.get("/test", "test")
-            return "done"
-        })
+    test("group with prefix should work", async () => {
+        const edr = new ElysiaDynamicRoute({ name: "xxx" })
+        const users = new Elysia({ prefix: '/b' })
+            .use(edr.elysia)
+            .get("/add", ({ xxx }) => {
+                expect(xxx).toBeDefined()
+                return "done"
+            })
 
-        console.log('app', app.routeTree)
-        console.log('app.server', app.server)
+        const main = new Elysia()
+            .use(users)
+            .get('/', "home")
 
-        const get1 = await app.handle(new Request("http://localhost")).then(res => res.text())
-        console.log("test  get1:", get1)
-        expect(get1).toBe("done")
-        const response = await app.handle(new Request("http://localhost/test")).then(res => res.text())
-        console.log("test  response:", response)
-        // expect(response).toBe("test")
+        const createRoad = await main.handle(new Request("http://localhost/b/add")).then(res => res.text())
+        expect(createRoad).toBe("done")
+        const response = await main.handle(new Request("http://localhost//b/test")).then(res => res.text())
+        expect(response).toBe("test")
     })
-
 })
