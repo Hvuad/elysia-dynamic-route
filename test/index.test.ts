@@ -5,8 +5,8 @@ import { ElysiaDynamicRoute } from "../src"
 
 describe("index", () => {
     test("should return true", async () => {
-        const app = new Elysia()
-        new ElysiaDynamicRoute(app)
+        const a = new Elysia()
+        const { app } = new ElysiaDynamicRoute(a)
         app.get("/", async ({ road }) => {
             road.add.get("/test", "test")
             return "done"

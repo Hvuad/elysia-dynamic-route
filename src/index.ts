@@ -14,14 +14,13 @@ type ElysiaDynamicRouteRode<Methods extends _Methods> = {
 }
 
 function create(app: Elysia) {
-  if (!app.server) throw new Error("Elysia instance is required")
+  if (!app.server) throw new Error("Elysia server instance is required")
   app.listen(app.server.port)
   return app
 }
 
 export class ElysiaDynamicRoute<E extends Elysia, const BasePath extends string = '', const NameFN extends string = "road"> {
-  app: Elysia<BasePath, false>
-  constructor(app: E, public config?: ElysiaConfig<BasePath, false> & ElysiaDynamicRouteConfig<NameFN>) {
+  constructor(public app: E, public config?: ElysiaConfig<BasePath, false> & ElysiaDynamicRouteConfig<NameFN>) {
 
     if (!app) throw new Error("Elysia instance is required")
 
@@ -51,6 +50,6 @@ export class ElysiaDynamicRoute<E extends Elysia, const BasePath extends string 
         }
       }
       ))
-    this.app = app
+
   }
 }
