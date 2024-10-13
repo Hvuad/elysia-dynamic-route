@@ -14,8 +14,10 @@ describe("index", () => {
 
 
         const get1 = await app.handle(new Request("http://localhost")).then(res => res.text())
+        console.log("test  get1:", get1)
 
         const response = await app.handle(new Request("http://localhost/test")).then(res => res.text())
+        console.log("test  response:", response)
 
 
 
