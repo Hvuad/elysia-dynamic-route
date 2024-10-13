@@ -14,40 +14,52 @@ type ElysiaDynamicRouteRode<Methods extends _Methods> = {
 }
 
 function create(app: Elysia) {
-  if (!app.server) throw new Error("Elysia server instance is required")
-  app.listen(app.server.port)
+  // if (!app.server) throw new Error("Elysia server instance is required")
+  // app.stop()
+  console.log("create  app.server?.port:", app.server?.port)
+  app.listen(app.server || 80)
+  // const a = app
+  // console.log("create  a:", a)
+
   return app
 }
 
 export class ElysiaDynamicRoute<E extends Elysia, const BasePath extends string = '', const NameFN extends string = "road"> {
-  EDR = (app: E, config?: ElysiaConfig<BasePath, false> & ElysiaDynamicRouteConfig<NameFN>) => new Elysia<BasePath>({ name: "elysia-dynamic-route", ...config })
-    .decorate(config?.init ?? "road", {
-      add: {
-        get<M extends "get">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
-          app.get(path, handler, hooks)
-          return create(app)
-        },
-        post<M extends "post">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
-          app.get(path, handler, hooks)
-          return create(app)
-        },
-        put<M extends "put">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
-          app.get(path, handler, hooks)
-          return create(app)
-        },
-        patch<M extends "patch">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
-          app.get(path, handler, hooks)
-          return create(app)
-        },
-        delete<M extends "delete">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
-          app.get(path, handler, hooks)
-          return create(app)
-        },
+  EDR = (app: Elysia = new Elysia(), config?: ElysiaConfig<BasePath, false> & ElysiaDynamicRouteConfig<NameFN>) => {
+    const edr = new Elysia<BasePath>({ name: "elysia-dynamic-route", ...config })
+      .decorate(config?.init ?? "road", {
+        add: {
+          get<M extends "get">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
+            app.get(path, handler, hooks)
+            app.use(app => app.get(path, handler, hooks))
+            return create(app)
+          },
+          post<M extends "post">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
+            app.get(path, handler, hooks)
+            return create(app)
+          },
+          put<M extends "put">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
+            app.get(path, handler, hooks)
+            return create(app)
+          },
+          patch<M extends "patch">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
+            app.get(path, handler, hooks)
+            return create(app)
+          },
+          delete<M extends "delete">(path: ElysiaDynamicRouteRode<M>['path'], handler: ElysiaDynamicRouteRode<M>['handler'], hooks?: ElysiaDynamicRouteRode<M>['hooks']) {
+            app.get(path, handler, hooks)
+            return create(app)
+          },
+        }
       }
-    }
-    )
+
+      )
+    app.use(edr)
+    return edr
+  }
+
   app: ReturnType<typeof this.EDR>
-  constructor(app: E, public config?: ElysiaConfig<BasePath, false> & ElysiaDynamicRouteConfig<NameFN>) {
+  constructor(app?: E, public config?: ElysiaConfig<BasePath, false> & ElysiaDynamicRouteConfig<NameFN>) {
     this.app = this.EDR(app, config)
   }
 }
